@@ -1,0 +1,141 @@
+<div class="dashboard-container">
+
+  <!-- HEADER -->
+  <div class="dashboard-header">
+    <div>
+      <h1>Flight Monitoring Dashboard</h1>
+      <p class="sub-title">
+        Real-time flight tracking and monitoring system
+      </p>
+    </div>
+
+    <button mat-raised-button color="primary">
+      <mat-icon>refresh</mat-icon>
+      Refresh
+    </button>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-grid">
+
+    @for (stat of stats(); track stat.title) {
+
+      <mat-card class="stat-card">
+
+        <div class="stat-top">
+
+          <div
+            class="icon-wrapper"
+            [style.background]="stat.color"
+          >
+            <mat-icon>{{ stat.icon }}</mat-icon>
+          </div>
+
+          <div class="stat-content">
+            <h3>{{ stat.title }}</h3>
+            <h2>{{ stat.count }}</h2>
+            <span>{{ stat.subText }}</span>
+          </div>
+
+        </div>
+
+      </mat-card>
+
+    }
+
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="content-grid">
+
+    <!-- LIVE FLIGHTS TABLE -->
+    <mat-card class="table-card">
+
+      <div class="section-header">
+        <h2>Live Flights</h2>
+
+        <button mat-button color="primary">
+          View All
+        </button>
+      </div>
+
+      <div class="table-placeholder">
+        <app-flights-list></app-flights-list>
+      </div>
+
+    </mat-card>
+
+    <!-- MAP -->
+    <mat-card class="map-card">
+
+      <div class="section-header">
+        <h2>Live Flight Map</h2>
+
+        <button mat-button color="primary">
+          Expand
+        </button>
+      </div>
+
+      <div class="map-placeholder">
+       <app-flight-map></app-flight-map>
+      </div>
+
+    </mat-card>
+
+  </div>
+
+  <!-- ALERTS + DETAILS -->
+  <div class="bottom-grid">
+
+    <!-- ALERTS -->
+    <mat-card class="alerts-card">
+
+      <div class="section-header">
+        <h2>Alerts Center</h2>
+      </div>
+
+      <div class="alert-item critical">
+        <mat-icon>warning</mat-icon>
+
+        <div>
+          <h4>Altitude Drop Alert</h4>
+          <p>AI102 experienced sudden altitude drop</p>
+        </div>
+      </div>
+
+      <div class="alert-item warning">
+        <mat-icon>speed</mat-icon>
+
+        <div>
+          <h4>Speed Threshold Exceeded</h4>
+          <p>UK507 exceeded speed limit</p>
+        </div>
+      </div>
+
+      <div class="alert-item info">
+        <mat-icon>schedule</mat-icon>
+
+        <div>
+          <h4>Delay Alert</h4>
+          <p>6E890 delayed more than 30 minutes</p>
+        </div>
+      </div>
+
+    </mat-card>
+
+    <!-- DETAILS -->
+    <mat-card class="details-card">
+
+      <div class="section-header">
+        <h2>Flight Details</h2>
+      </div>
+
+      <div class="details-placeholder">
+        <app-flight-detail></app-flight-detail>
+      </div>
+
+    </mat-card>
+
+  </div>
+
+</div>

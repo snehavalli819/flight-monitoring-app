@@ -1,0 +1,309 @@
+<mat-card class="details-container">
+
+  <!-- HEADER -->
+  <div class="details-header">
+
+    <div>
+
+      <div class="flight-title-row">
+
+        <h1>
+          {{ selectedFlight().flightId }}
+        </h1>
+
+        <div
+          class="status-badge"
+          [ngClass]="flightStatusClass()"
+        >
+          {{ selectedFlight().status }}
+        </div>
+
+      </div>
+
+      <p class="route-text">
+
+        {{ selectedFlight().departureAirport }}
+
+        <mat-icon>
+          trending_flat
+        </mat-icon>
+
+        {{ selectedFlight().destinationAirport }}
+
+      </p>
+
+    </div>
+
+    <button
+      mat-raised-button
+      color="primary"
+    >
+      Track Live
+    </button>
+
+  </div>
+
+  <!-- QUICK STATS -->
+  <div class="stats-grid">
+
+    <div class="stat-card">
+
+      <mat-icon>
+        airplanemode_active
+      </mat-icon>
+
+      <div>
+        <span>Aircraft</span>
+        <h3>
+          {{ selectedFlight().aircraftType }}
+        </h3>
+      </div>
+
+    </div>
+
+    <div class="stat-card">
+
+      <mat-icon>
+        speed
+      </mat-icon>
+
+      <div>
+        <span>Speed</span>
+        <h3>
+          {{ selectedFlight().speed }} km/h
+        </h3>
+      </div>
+
+    </div>
+
+    <div class="stat-card">
+
+      <mat-icon>
+        height
+      </mat-icon>
+
+      <div>
+        <span>Altitude</span>
+        <h3>
+          {{ selectedFlight().altitude }} ft
+        </h3>
+      </div>
+
+    </div>
+
+    <div class="stat-card">
+
+      <mat-icon>
+        schedule
+      </mat-icon>
+
+      <div>
+        <span>ETA</span>
+        <h3>
+          {{ selectedFlight().eta }}
+        </h3>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- TABS -->
+  <mat-tab-group>
+
+    <!-- AIRCRAFT INFO -->
+    <mat-tab label="Aircraft Info">
+
+      <div class="tab-content">
+
+        <div class="info-grid">
+
+          <div class="info-item">
+            <label>Airline</label>
+            <p>{{ selectedFlight().airline }}</p>
+          </div>
+
+          <div class="info-item">
+            <label>Captain</label>
+            <p>{{ selectedFlight().captain }}</p>
+          </div>
+
+          <div class="info-item">
+            <label>Co-Pilot</label>
+            <p>{{ selectedFlight().coPilot }}</p>
+          </div>
+
+          <div class="info-item">
+            <label>Fuel Level</label>
+            <p>{{ selectedFlight().fuelLevel }}</p>
+          </div>
+
+          <div class="info-item">
+            <label>Terminal</label>
+            <p>{{ selectedFlight().terminal }}</p>
+          </div>
+
+          <div class="info-item">
+            <label>Gate</label>
+            <p>{{ selectedFlight().gate }}</p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </mat-tab>
+
+    <!-- ROUTE INFO -->
+    <mat-tab label="Route Information">
+
+      <div class="tab-content">
+
+        <div class="route-card">
+
+          <div class="route-box">
+            <h3>Departure</h3>
+            <p>{{ selectedFlight().departureAirport }}</p>
+          </div>
+
+          <div class="route-line">
+
+            <mat-icon>
+              flight_takeoff
+            </mat-icon>
+
+            <div class="line"></div>
+
+            <mat-icon>
+              flight_land
+            </mat-icon>
+
+          </div>
+
+          <div class="route-box">
+            <h3>Destination</h3>
+            <p>
+              {{ selectedFlight().destinationAirport }}
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </mat-tab>
+
+    <!-- TIMELINE -->
+    <mat-tab label="Timeline">
+
+      <div class="tab-content">
+
+        <div class="timeline">
+
+          @for (
+            item of timeline();
+            track item.status
+          ) {
+
+            <div class="timeline-item">
+
+              <div
+                class="timeline-dot"
+                [class.completed]="item.completed"
+              ></div>
+
+              <div class="timeline-content">
+
+                <h4>
+                  {{ item.status }}
+                </h4>
+
+                <p>
+                  {{ item.time }}
+                </p>
+
+              </div>
+
+            </div>
+
+          }
+
+        </div>
+
+      </div>
+
+    </mat-tab>
+
+    <!-- DELAY HISTORY -->
+    <mat-tab label="Delay History">
+
+      <div class="tab-content">
+
+        @for (
+          delay of delayHistory();
+          track delay.timestamp
+        ) {
+
+          <div class="delay-card">
+
+            <div>
+
+              <h4>
+                {{ delay.reason }}
+              </h4>
+
+              <span>
+                {{ delay.timestamp }}
+              </span>
+
+            </div>
+
+            <mat-chip color="warn">
+
+              +{{ delay.delayMinutes }} mins
+
+            </mat-chip>
+
+          </div>
+
+        }
+
+      </div>
+
+    </mat-tab>
+
+    <!-- COMMUNICATION LOGS -->
+    <mat-tab label="Communication Logs">
+
+      <div class="tab-content">
+
+        @for (
+          log of communicationLogs();
+          track log.time
+        ) {
+
+          <div class="log-card">
+
+            <div class="log-header">
+
+              <h4>{{ log.sender }}</h4>
+
+              <span>{{ log.time }}</span>
+
+            </div>
+
+            <p>
+              {{ log.message }}
+            </p>
+
+          </div>
+
+        }
+
+      </div>
+
+    </mat-tab>
+
+  </mat-tab-group>
+
+</mat-card>
