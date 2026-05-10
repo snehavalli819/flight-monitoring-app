@@ -1,0 +1,214 @@
+<mat-card class="flight-map-container">
+
+  <!-- HEADER -->
+  <div class="map-header">
+
+    <div>
+
+      <h1>Live Flight Tracking</h1>
+
+      <p>
+        Real-time aircraft movement monitoring
+      </p>
+
+    </div>
+
+    <div class="header-actions">
+
+      <!-- LIVE -->
+      <div class="live-indicator">
+
+        <span class="live-dot"></span>
+
+        LIVE
+
+      </div>
+
+      <!-- REFRESH -->
+      <button
+        mat-icon-button
+        (click)="refreshMap()"
+        matTooltip="Refresh Map"
+      >
+
+        <mat-icon>
+          refresh
+        </mat-icon>
+
+      </button>
+
+      <!-- FULLSCREEN -->
+      <button
+        mat-icon-button
+        matTooltip="Fullscreen"
+      >
+
+        <mat-icon>
+          fullscreen
+        </mat-icon>
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters-container">
+
+    @for (
+      filter of filters;
+      track filter
+    ) {
+
+      <button
+        class="filter-btn"
+        [class.active]="
+          activeFilter() === filter
+        "
+        (click)="setFilter(filter)"
+      >
+
+        {{ filter }}
+
+      </button>
+
+    }
+
+  </div>
+
+  <!-- MAP SECTION -->
+  <div class="map-wrapper">
+
+    <!-- LEAFLET MAP -->
+    <div
+      id="flight-map"
+      class="leaflet-map"
+    ></div>
+
+    <!-- LEGEND -->
+    <div class="map-legend">
+
+      <h3>Flight Status</h3>
+
+      <div class="legend-item">
+
+        <span
+          class="legend-dot enroute"
+        ></span>
+
+        <span>Enroute</span>
+
+      </div>
+
+      <div class="legend-item">
+
+        <span
+          class="legend-dot delayed"
+        ></span>
+
+        <span>Delayed</span>
+
+      </div>
+
+      <div class="legend-item">
+
+        <span
+          class="legend-dot boarding"
+        ></span>
+
+        <span>Boarding</span>
+
+      </div>
+
+      <div class="legend-item">
+
+        <span
+          class="legend-dot landed"
+        ></span>
+
+        <span>Landed</span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- FLIGHT SUMMARY -->
+  <div class="summary-grid">
+
+    <!-- ACTIVE -->
+    <div class="summary-card">
+
+      <div class="summary-icon blue">
+
+        <mat-icon>
+          flight_takeoff
+        </mat-icon>
+
+      </div>
+
+      <div>
+
+        <span>
+          Active Flights
+        </span>
+
+        <h2>
+          {{ flights().length }}
+        </h2>
+
+      </div>
+
+    </div>
+
+    <!-- ALERTS -->
+    <div class="summary-card">
+
+      <div class="summary-icon red">
+
+        <mat-icon>
+          warning
+        </mat-icon>
+
+      </div>
+
+      <div>
+
+        <span>
+          Critical Alerts
+        </span>
+
+        <h2>3</h2>
+
+      </div>
+
+    </div>
+
+    <!-- FIR -->
+    <div class="summary-card">
+
+      <div class="summary-icon green">
+
+        <mat-icon>
+          public
+        </mat-icon>
+
+      </div>
+
+      <div>
+
+        <span>
+          FIR Regions
+        </span>
+
+        <h2>6</h2>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</mat-card>

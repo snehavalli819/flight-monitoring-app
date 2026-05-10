@@ -1,0 +1,438 @@
+<mat-card class="flight-list-container">
+
+  <!-- HEADER -->
+  <div class="header-section">
+
+    <div>
+
+      <h1>Flight Monitoring</h1>
+
+      <p>
+        Real-time flight tracking and operations
+      </p>
+
+    </div>
+
+    <button
+      mat-raised-button
+      color="primary"
+    >
+      <mat-icon>refresh</mat-icon>
+      Refresh
+    </button>
+
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters-section">
+
+    <!-- SEARCH -->
+    <div class="search-box">
+
+      <mat-icon>
+        search
+      </mat-icon>
+
+      <input
+        type="text"
+        placeholder="Search Flight / Airport / FIR"
+        [formControl]="searchControl"
+      />
+
+    </div>
+
+    <!-- STATUS -->
+    <mat-form-field appearance="outline">
+
+      <mat-label>Status</mat-label>
+
+      <mat-select
+        (selectionChange)="
+          onStatusChange($event.value)
+        "
+      >
+
+        <mat-option value="ALL">
+          All
+        </mat-option>
+
+        <mat-option value="Scheduled">
+          Scheduled
+        </mat-option>
+
+        <mat-option value="Boarding">
+          Boarding
+        </mat-option>
+
+        <mat-option value="Departed">
+          Departed
+        </mat-option>
+
+        <mat-option value="Enroute">
+          Enroute
+        </mat-option>
+
+        <mat-option value="Delayed">
+          Delayed
+        </mat-option>
+
+        <mat-option value="Landed">
+          Landed
+        </mat-option>
+
+      </mat-select>
+
+    </mat-form-field>
+
+    <!-- AIRCRAFT -->
+    <mat-form-field appearance="outline">
+
+      <mat-label>
+        Aircraft Type
+      </mat-label>
+
+      <mat-select
+        (selectionChange)="
+          onAircraftChange($event.value)
+        "
+      >
+
+        <mat-option value="ALL">
+          All
+        </mat-option>
+
+        <mat-option value="Boeing 787">
+          Boeing 787
+        </mat-option>
+
+        <mat-option value="Boeing 737">
+          Boeing 737
+        </mat-option>
+
+        <mat-option value="Airbus A320">
+          Airbus A320
+        </mat-option>
+
+        <mat-option value="Airbus A321">
+          Airbus A321
+        </mat-option>
+
+      </mat-select>
+
+    </mat-form-field>
+
+    <!-- FIR -->
+    <mat-form-field appearance="outline">
+
+      <mat-label>
+        FIR Region
+      </mat-label>
+
+      <mat-select
+        (selectionChange)="
+          onFIRChange($event.value)
+        "
+      >
+
+        <mat-option value="ALL">
+          All
+        </mat-option>
+
+        <mat-option value="Mumbai FIR">
+          Mumbai FIR
+        </mat-option>
+
+        <mat-option value="Chennai FIR">
+          Chennai FIR
+        </mat-option>
+
+      </mat-select>
+
+    </mat-form-field>
+
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrapper">
+
+    <table
+      mat-table
+      [dataSource]="filteredFlights()"
+      class="flight-table"
+    >
+
+      <!-- FLIGHT ID -->
+      <ng-container matColumnDef="flightId">
+
+        <th mat-header-cell *matHeaderCellDef>
+          Flight ID
+        </th>
+
+        <td mat-cell *matCellDef="let flight">
+
+          <div class="flight-id-cell">
+
+            <div class="flight-icon">
+
+              <mat-icon>
+                flight
+              </mat-icon>
+
+            </div>
+
+            <div>
+
+              <h4>{{ flight.id }}</h4>
+
+              <span>
+                {{ flight.aircraftType }}
+              </span>
+
+            </div>
+
+          </div>
+
+        </td>
+
+      </ng-container>
+
+      <!-- AIRCRAFT -->
+      <ng-container matColumnDef="aircraft">
+
+        <th mat-header-cell *matHeaderCellDef>
+          Aircraft
+        </th>
+
+        <td mat-cell *matCellDef="let flight">
+
+          {{ flight.aircraftType }}
+
+        </td>
+
+      </ng-container>
+
+      <!-- ROUTE -->
+      <ng-container matColumnDef="route">
+
+        <th mat-header-cell *matHeaderCellDef>
+          Route
+        </th>
+
+        <td mat-cell *matCellDef="let flight">
+
+          <div class="route-cell">
+
+            <span>
+              {{ flight.departureAirport }}
+            </span>
+
+            <mat-icon>
+              trending_flat
+            </mat-icon>
+
+            <span>
+              {{ flight.destinationAirport }}
+            </span>
+
+          </div>
+
+        </td>
+
+      </ng-container>
+
+      <!-- FIR -->
+      <ng-container matColumnDef="fir">
+
+        <th mat-header-cell *matHeaderCellDef>
+          FIR Region
+        </th>
+
+        <td mat-cell *matCellDef="let flight">
+
+          {{ flight.firRegion }}
+
+        </td>
+
+      </ng-container>
+
+      <!-- ALTITUDE -->
+      <ng-container matColumnDef="altitude">
+
+        <th mat-header-cell *matHeaderCellDef>
+          Altitude
+        </th>
+
+        <td mat-cell *matCellDef="let flight">
+
+          {{ flight.altitude | number }}
+          ft
+
+        </td>
+
+      </ng-container>
+
+      <!-- SPEED -->
+      <ng-container matColumnDef="speed">
+
+        <th mat-header-cell *matHeaderCellDef>
+          Speed
+        </th>
+
+        <td mat-cell *matCellDef="let flight">
+
+          {{ flight.speed }}
+          km/h
+
+        </td>
+
+      </ng-container>
+
+      <!-- STATUS -->
+      <ng-container matColumnDef="status">
+
+        <th mat-header-cell *matHeaderCellDef>
+          Status
+        </th>
+
+        <td mat-cell *matCellDef="let flight">
+
+          <div
+            class="status-chip"
+            [ngClass]="
+              getStatusClass(flight.status)
+            "
+          >
+
+            {{ flight.status }}
+
+          </div>
+
+        </td>
+
+      </ng-container>
+
+      <!-- ETA -->
+      <ng-container matColumnDef="eta">
+
+        <th mat-header-cell *matHeaderCellDef>
+          ETA
+        </th>
+
+        <td mat-cell *matCellDef="let flight">
+
+          {{ flight.eta }}
+
+        </td>
+
+      </ng-container>
+
+      <!-- UPDATED -->
+      <ng-container matColumnDef="updated">
+
+        <th mat-header-cell *matHeaderCellDef>
+          Last Updated
+        </th>
+
+        <td mat-cell *matCellDef="let flight">
+
+          {{ flight.lastUpdated }}
+
+        </td>
+
+      </ng-container>
+
+      <!-- ACTIONS -->
+      <ng-container matColumnDef="actions">
+
+        <th mat-header-cell *matHeaderCellDef>
+          Actions
+        </th>
+
+        <td mat-cell *matCellDef="let flight">
+
+          <div class="action-buttons">
+
+            <button
+              mat-icon-button
+              matTooltip="Track Flight"
+              (click)="trackFlight(flight)"
+            >
+
+              <mat-icon>
+                travel_explore
+              </mat-icon>
+
+            </button>
+
+            <button
+              mat-icon-button
+              matTooltip="View Details"
+              (click)="
+                openFlightDetails(flight)
+              "
+            >
+
+              <mat-icon>
+                visibility
+              </mat-icon>
+
+            </button>
+
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="menu"
+            >
+
+              <mat-icon>
+                more_vert
+              </mat-icon>
+
+            </button>
+
+            <mat-menu #menu="matMenu">
+
+              <button mat-menu-item>
+                <mat-icon>
+                  edit
+                </mat-icon>
+
+                Edit Flight
+              </button>
+
+              <button mat-menu-item>
+                <mat-icon>
+                  warning
+                </mat-icon>
+
+                Raise Alert
+              </button>
+
+            </mat-menu>
+
+          </div>
+
+        </td>
+
+      </ng-container>
+
+      <!-- ROWS -->
+      <tr
+        mat-header-row
+        *matHeaderRowDef="
+          displayedColumns
+        "
+      ></tr>
+
+      <tr
+        mat-row
+        *matRowDef="
+          let row;
+          columns: displayedColumns
+        "
+      ></tr>
+
+    </table>
+
+  </div>
+
+</mat-card>

@@ -1,0 +1,175 @@
+<mat-sidenav-container class="layout-container">
+
+  <!-- SIDEBAR -->
+  <mat-sidenav
+    mode="side"
+    [opened]="sidebarOpened()"
+    class="sidebar"
+  >
+
+    <!-- LOGO -->
+    <div class="logo-section">
+
+      <div class="logo-circle">
+        <mat-icon>flight_takeoff</mat-icon>
+      </div>
+
+      <div class="logo-content">
+        <h2>SkyControl</h2>
+        <span>Flight Management</span>
+      </div>
+
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- NAVIGATION -->
+    <div class="nav-links">
+
+      @for (item of navItems; track item.label) {
+
+        <a
+          class="nav-item"
+          [routerLink]="item.route"
+          routerLinkActive="active-link"
+        >
+
+          <mat-icon>{{ item.icon }}</mat-icon>
+
+          <span>{{ item.label }}</span>
+
+        </a>
+
+      }
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="sidebar-footer">
+
+      <div class="role-card">
+
+        <mat-icon>verified_user</mat-icon>
+
+        <div>
+          <h4>{{ currentRole() }}</h4>
+          <span>Full System Access</span>
+        </div>
+
+      </div>
+
+    </div>
+
+  </mat-sidenav>
+
+  <!-- MAIN -->
+  <mat-sidenav-content>
+
+    <!-- TOP NAVBAR -->
+    <mat-toolbar class="top-navbar">
+
+      <!-- LEFT -->
+      <div class="navbar-left">
+
+        <button
+          mat-icon-button
+          (click)="toggleSidebar()"
+        >
+          <mat-icon>menu</mat-icon>
+        </button>
+
+        <div class="page-title">
+          Flight Monitoring Dashboard
+        </div>
+
+      </div>
+
+      <!-- RIGHT -->
+      <div class="navbar-right">
+
+        <!-- SEARCH -->
+        <div class="search-box">
+
+          <mat-icon>search</mat-icon>
+
+          <input
+            type="text"
+            placeholder="Search flights..."
+          />
+
+        </div>
+
+        <!-- ALERTS -->
+        <button
+          mat-icon-button
+          [matBadge]="alertCount()"
+          matBadgeColor="warn"
+        >
+          <mat-icon>
+            notifications_active
+          </mat-icon>
+        </button>
+
+        <!-- SETTINGS -->
+        <button mat-icon-button>
+          <mat-icon>settings</mat-icon>
+        </button>
+
+        <!-- USER -->
+        <button
+          mat-button
+          [matMenuTriggerFor]="profileMenu"
+          class="profile-button"
+        >
+
+          <div class="avatar">
+            SC
+          </div>
+
+          <div class="profile-info">
+            <h4>Sneha</h4>
+            <span>{{ currentRole() }}</span>
+          </div>
+
+          <mat-icon>
+            keyboard_arrow_down
+          </mat-icon>
+
+        </button>
+
+        <!-- PROFILE MENU -->
+        <mat-menu #profileMenu="matMenu">
+
+          <button mat-menu-item>
+            <mat-icon>person</mat-icon>
+            Profile
+          </button>
+
+          <button mat-menu-item>
+            <mat-icon>settings</mat-icon>
+            Settings
+          </button>
+
+          <mat-divider></mat-divider>
+
+          <button mat-menu-item>
+            <mat-icon>logout</mat-icon>
+            Logout
+          </button>
+
+        </mat-menu>
+
+      </div>
+
+    </mat-toolbar>
+
+    <!-- ROUTER CONTENT -->
+    <div class="page-container">
+
+      <router-outlet></router-outlet>
+
+    </div>
+
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

@@ -1,0 +1,20 @@
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <label>Flight ID <input formControlName="flightId" /></label>
+  <label>Incident Type
+    <select formControlName="type">
+      <option value="communication">Communication Failure</option>
+      <option value="altitude">Altitude Event</option>
+      <option value="other">Other</option>
+    </select>
+  </label>
+  <label>Severity
+    <select formControlName="severity">
+      <option value="low">LOW</option>
+      <option value="medium">MEDIUM</option>
+      <option value="high">HIGH</option>
+    </select>
+  </label>
+  <label>Description <textarea formControlName="description"></textarea></label>
+  <label *ngIf="showAssigned">Assigned Team <input formControlName="assignedTeam" /></label>
+  <button type="submit" [disabled]="form.invalid">Report</button>
+</form>
