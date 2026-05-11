@@ -1,0 +1,121 @@
+<mat-card class="history-container">
+
+  <!-- HEADER -->
+  <div class="history-header">
+
+    <div>
+
+      <h1>Alert History</h1>
+
+      <p>
+        Historical alert tracking and monitoring
+      </p>
+
+    </div>
+
+    <!-- FILTER -->
+    <mat-form-field appearance="outline">
+
+      <mat-label>
+        Severity
+      </mat-label>
+
+      <mat-select
+        (selectionChange)="
+          setSeverityFilter(
+            $event.value
+          )
+        "
+      >
+
+        <mat-option value="ALL">
+          All
+        </mat-option>
+
+        <mat-option value="HIGH">
+          High
+        </mat-option>
+
+        <mat-option value="MEDIUM">
+          Medium
+        </mat-option>
+
+        <mat-option value="LOW">
+          Low
+        </mat-option>
+
+      </mat-select>
+
+    </mat-form-field>
+
+  </div>
+
+  <!-- HISTORY LIST -->
+  <div class="history-list">
+
+    @for (
+      alert of filteredAlerts();
+      track alert.id
+    ) {
+
+      <div class="history-card">
+
+        <!-- LEFT -->
+        <div class="history-left">
+
+          <div
+            class="severity-indicator"
+            [ngClass]="
+              getSeverityClass(
+                alert.severity
+              )
+            "
+          ></div>
+
+          <div class="history-content">
+
+            <div class="history-top">
+
+              <h3>
+                {{ alert.flightId }}
+              </h3>
+
+              <mat-chip>
+                {{
+                  alert.severity
+                }}
+              </mat-chip>
+
+            </div>
+
+            <p>
+              {{ alert.message }}
+            </p>
+
+            <span>
+
+              {{
+                alert.timestamp
+                  | date:'medium'
+              }}
+
+            </span>
+
+          </div>
+
+        </div>
+
+        <!-- TYPE -->
+        <div class="alert-type">
+
+          {{ alert.type }}
+
+        </div>
+
+      </div>
+
+    }
+
+  </div>
+
+</mat-card>

@@ -1,0 +1,81 @@
+[
+  {
+    "id": "AI102",
+    "aircraftType": "Boeing 787",
+    "departureAirport": "DEL",
+    "destinationAirport": "LHR",
+    "firRegion": "Mumbai FIR",
+    "latitude": 28.6139,
+    "longitude": 77.2090,
+    "altitude": 36000,
+    "speed": 840,
+    "status": "Enroute",
+    "eta": "02:45 HRS",
+    "lastUpdated": "2026-05-11T10:20:00Z",
+    "delayMinutes": 0
+  },
+
+  {
+    "id": "UK221",
+    "aircraftType": "Airbus A320",
+    "departureAirport": "BOM",
+    "destinationAirport": "DXB",
+    "firRegion": "Mumbai FIR",
+    "latitude": 19.0760,
+    "longitude": 72.8777,
+    "altitude": 28000,
+    "speed": 720,
+    "status": "Delayed",
+    "eta": "03:15 HRS",
+    "lastUpdated": "2026-05-11T10:22:00Z",
+    "delayMinutes": 42
+  },
+
+  {
+    "id": "6E990",
+    "aircraftType": "Airbus A321",
+    "departureAirport": "MAA",
+    "destinationAirport": "SIN",
+    "firRegion": "Chennai FIR",
+    "latitude": 13.0827,
+    "longitude": 80.2707,
+    "altitude": 12000,
+    "speed": 420,
+    "status": "Boarding",
+    "eta": "00:50 HRS",
+    "lastUpdated": "2026-05-11T10:25:00Z",
+    "delayMinutes": 0
+  },
+
+  {
+    "id": "SG551",
+    "aircraftType": "Boeing 737",
+    "departureAirport": "HYD",
+    "destinationAirport": "BLR",
+    "firRegion": "Chennai FIR",
+    "latitude": 17.3850,
+    "longitude": 78.4867,
+    "altitude": 32000,
+    "speed": 780,
+    "status": "Enroute",
+    "eta": "01:10 HRS",
+    "lastUpdated": "2026-05-11T10:27:00Z",
+    "delayMinutes": 0
+  },
+
+  {
+    "id": "AI440",
+    "aircraftType": "Boeing 777",
+    "departureAirport": "DEL",
+    "destinationAirport": "JFK",
+    "firRegion": "Delhi FIR",
+    "latitude": 26.8467,
+    "longitude": 80.9462,
+    "altitude": 39000,
+    "speed": 910,
+    "status": "Enroute",
+    "eta": "08:25 HRS",
+    "lastUpdated": "2026-05-11T10:30:00Z",
+    "delayMinutes": 0
+  }
+]

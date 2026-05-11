@@ -87,41 +87,9 @@
   <!-- ALERTS + DETAILS -->
   <div class="bottom-grid">
 
-    <!-- ALERTS -->
-    <mat-card class="alerts-card">
-
-      <div class="section-header">
-        <h2>Alerts Center</h2>
-      </div>
-
-      <div class="alert-item critical">
-        <mat-icon>warning</mat-icon>
-
-        <div>
-          <h4>Altitude Drop Alert</h4>
-          <p>AI102 experienced sudden altitude drop</p>
-        </div>
-      </div>
-
-      <div class="alert-item warning">
-        <mat-icon>speed</mat-icon>
-
-        <div>
-          <h4>Speed Threshold Exceeded</h4>
-          <p>UK507 exceeded speed limit</p>
-        </div>
-      </div>
-
-      <div class="alert-item info">
-        <mat-icon>schedule</mat-icon>
-
-        <div>
-          <h4>Delay Alert</h4>
-          <p>6E890 delayed more than 30 minutes</p>
-        </div>
-      </div>
-
-    </mat-card>
+  <!-- ALERTS -->
+  <!-- Use standalone alerts panel component -->
+  <app-alerts-panel></app-alerts-panel>
 
     <!-- DETAILS -->
     <mat-card class="details-card">
