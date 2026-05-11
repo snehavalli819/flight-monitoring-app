@@ -1,20 +1,287 @@
-<form [formGroup]="form" (ngSubmit)="submit()">
-  <label>Flight ID <input formControlName="flightId" /></label>
-  <label>Incident Type
-    <select formControlName="type">
-      <option value="communication">Communication Failure</option>
-      <option value="altitude">Altitude Event</option>
-      <option value="other">Other</option>
-    </select>
-  </label>
-  <label>Severity
-    <select formControlName="severity">
-      <option value="low">LOW</option>
-      <option value="medium">MEDIUM</option>
-      <option value="high">HIGH</option>
-    </select>
-  </label>
-  <label>Description <textarea formControlName="description"></textarea></label>
-  <label *ngIf="showAssigned">Assigned Team <input formControlName="assignedTeam" /></label>
-  <button type="submit" [disabled]="form.invalid">Report</button>
-</form>
+<mat-card class="incident-container">
+
+  <!-- HEADER -->
+  <div class="incident-header">
+
+    <div>
+
+      <h1>
+        Incident Reporting
+      </h1>
+
+      <p>
+        Report and manage
+        flight incidents
+      </p>
+
+    </div>
+
+    <div class="severity-chip">
+
+      <mat-icon>
+        warning
+      </mat-icon>
+
+      Active Monitoring
+
+    </div>
+
+  </div>
+
+  <!-- FORM -->
+  <form
+    [formGroup]="incidentForm"
+    (ngSubmit)="submitIncident()"
+  >
+
+    <div class="form-grid">
+
+      <!-- FLIGHT ID -->
+      <mat-form-field appearance="outline">
+
+        <mat-label>
+          Flight ID
+        </mat-label>
+
+        <input
+          matInput
+          formControlName="flightId"
+          placeholder="AI102"
+        />
+
+        <mat-error
+          *ngIf="
+            hasError('flightId')
+          "
+        >
+          Flight ID is required
+        </mat-error>
+
+      </mat-form-field>
+
+      <!-- INCIDENT TYPE -->
+      <mat-form-field appearance="outline">
+
+        <mat-label>
+          Incident Type
+        </mat-label>
+
+        <mat-select
+          formControlName="incidentType"
+        >
+
+          @for (
+            type of incidentTypes;
+            track type
+          ) {
+
+            <mat-option
+              [value]="type"
+            >
+
+              {{ type }}
+
+            </mat-option>
+
+          }
+
+        </mat-select>
+
+      </mat-form-field>
+
+      <!-- SEVERITY -->
+      <mat-form-field appearance="outline">
+
+        <mat-label>
+          Severity
+        </mat-label>
+
+        <mat-select
+          formControlName="severity"
+        >
+
+          @for (
+            severity of severityLevels;
+            track severity
+          ) {
+
+            <mat-option
+              [value]="severity"
+            >
+
+              {{ severity }}
+
+            </mat-option>
+
+          }
+
+        </mat-select>
+
+      </mat-form-field>
+
+      <!-- TIMESTAMP -->
+      <mat-form-field appearance="outline">
+
+        <mat-label>
+          Timestamp
+        </mat-label>
+
+        <input
+          matInput
+          type="datetime-local"
+          formControlName="timestamp"
+        />
+
+      </mat-form-field>
+
+    </div>
+
+    <!-- DESCRIPTION -->
+    <mat-form-field
+      appearance="outline"
+      class="full-width"
+    >
+
+      <mat-label>
+        Incident Description
+      </mat-label>
+
+      <textarea
+        matInput
+        rows="5"
+        formControlName="description"
+      ></textarea>
+
+      <mat-error
+        *ngIf="
+          hasError('description')
+        "
+      >
+
+        Description must be at
+        least 15 characters
+
+      </mat-error>
+
+    </mat-form-field>
+
+    <!-- HIGH SEVERITY -->
+    @if (isHighSeverity()) {
+
+      <div class="dynamic-section">
+
+        <h3>
+          High Severity Handling
+        </h3>
+
+        <mat-form-field
+          appearance="outline"
+          class="full-width"
+        >
+
+          <mat-label>
+            Assigned Team
+          </mat-label>
+
+          <mat-select
+            formControlName="assignedTeam"
+          >
+
+            @for (
+              team of teams;
+              track team
+            ) {
+
+              <mat-option
+                [value]="team"
+              >
+
+                {{ team }}
+
+              </mat-option>
+
+            }
+
+          </mat-select>
+
+        </mat-form-field>
+
+      </div>
+    }
+
+    <!-- COMMUNICATION FAILURE -->
+    @if (
+      isCommunicationFailure()
+    ) {
+
+      <div class="dynamic-section">
+
+        <h3>
+          Communication Details
+        </h3>
+
+        <div class="form-grid">
+
+          <!-- FREQUENCY -->
+          <mat-form-field appearance="outline">
+
+            <mat-label>
+              Communication Frequency
+            </mat-label>
+
+            <input
+              matInput
+              formControlName="communicationFrequency"
+              placeholder="121.5 MHz"
+            />
+
+          </mat-form-field>
+
+          <!-- LAST COMMUNICATION -->
+          <mat-form-field appearance="outline">
+
+            <mat-label>
+              Last Communication Time
+            </mat-label>
+
+            <input
+              matInput
+              type="time"
+              formControlName="lastCommunicationTime"
+            />
+
+          </mat-form-field>
+
+        </div>
+
+      </div>
+    }
+
+    <!-- ACTIONS -->
+    <div class="form-actions">
+
+      <button
+        type="button"
+        mat-stroked-button
+        (click)="resetForm()"
+      >
+
+        Reset
+
+      </button>
+
+      <button
+        type="submit"
+        mat-raised-button
+        color="primary"
+      >
+
+        Submit Incident
+
+      </button>
+
+    </div>
+
+  </form>
+
+</mat-card>

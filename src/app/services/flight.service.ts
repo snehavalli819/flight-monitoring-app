@@ -1,134 +1,321 @@
-import { Injectable, signal, computed, effect } from '@angular/core';
-import { Flight } from '../models/flight';
-import { interval, Subject } from 'rxjs';
+import {
+  Injectable,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 
-@Injectable({ providedIn: 'root' })
+import {
+  MockFlightSocketService,
+  Flight,
+} from './mock-flight-socket.service';
+
+@Injectable({
+  providedIn: 'root',
+})
 export class FlightService {
-  private flightsSignal = signal<Flight[]>([]);
-  readonly flights = computed(() => this.flightsSignal());
 
-  // observable-like subject for external subscribers
-  readonly updates$ = new Subject<Flight[]>();
-
-  private simTick$ = interval(3000);
-
-  constructor() {
-    // seed with sample data (lat/lon roughly over US)
-    const now = new Date();
-    const later = new Date(now.getTime() + 1000 * 60 * 90);
-    this.flightsSignal.set([
-      {
-        id: 'F001',
-        flightNumber: 'AA100',
-        aircraftType: 'A320',
-        origin: 'JFK',
-        destination: 'LAX',
-        firRegion: 'KZNY',
-        latitude: 40.6413,
-        longitude: -73.7781,
-        altitude: 0,
-        speed: 0,
-        departure: now.toISOString(),
-        arrival: later.toISOString(),
-        eta: later.toISOString(),
-        lastUpdated: now.toISOString(),
-        status: 'scheduled',
-        capacity: 180,
-        delayMinutes: 0,
-      },
-      {
-        id: 'F002',
-        flightNumber: 'DL200',
-        aircraftType: 'B737',
-        origin: 'SFO',
-        destination: 'ORD',
-        firRegion: 'KZLA',
-        latitude: 37.7749,
-        longitude: -122.4194,
-        altitude: 10000,
-        speed: 750,
-        departure: new Date(now.getTime() - 1000 * 60 * 60).toISOString(),
-        arrival: new Date(now.getTime() + 1000 * 60 * 120).toISOString(),
-        eta: new Date(now.getTime() + 1000 * 60 * 120).toISOString(),
-        lastUpdated: now.toISOString(),
-        status: 'enroute',
-        capacity: 160,
-        delayMinutes: 0,
-      },
-    ]);
-
-    // simulation effect: update flights every tick
-    this.simTick$.subscribe(() => this.simulateStep());
-
-    // publish initial
-    effect(() => this.updates$.next(this.flights()));
-  }
-
-  list(): Flight[] {
-    return this.flights();
-  }
-
-  get(id: string): Flight | undefined {
-    return this.flights().find((f) => f.id === id);
-  }
-
-  add(f: Flight) {
-    this.flightsSignal.update((arr) => [...arr, f]);
-  }
-
-  update(id: string, patch: Partial<Flight>) {
-    this.flightsSignal.update((arr) => arr.map((f) => (f.id === id ? { ...f, ...patch } : f)));
-  }
-
-  remove(id: string) {
-    this.flightsSignal.update((arr) => arr.filter((f) => f.id !== id));
-  }
-
-  private simulateStep() {
-    // simple simulation: move enroute flights slightly, change altitude/speed
-    this.flightsSignal.update((arr) =>
-      arr.map((f) => {
-        const copy = { ...f };
-        const now = new Date();
-        copy.lastUpdated = now.toISOString();
-
-        // random small deltas
-        const dLat = (Math.random() - 0.5) * 0.1;
-        const dLon = (Math.random() - 0.5) * 0.1;
-        const dAlt = (Math.random() - 0.5) * 200; // meters
-        const dSpeed = (Math.random() - 0.5) * 50; // km/h
-
-        if (copy.status === 'enroute' || copy.status === 'departed') {
-          copy.latitude = +(copy.latitude + dLat).toFixed(6);
-          copy.longitude = +(copy.longitude + dLon).toFixed(6);
-          copy.altitude = Math.max(0, Math.round(copy.altitude + dAlt));
-          copy.speed = Math.max(0, Math.round(copy.speed + dSpeed));
-
-          // ETA reduce slightly
-          if (copy.eta) {
-            const etaDate = new Date(copy.eta).getTime() - 1000 * 30; // 30s less
-            copy.eta = new Date(Math.max(etaDate, Date.now())).toISOString();
-          }
-
-          // random status transitions
-          if (Math.random() < 0.02) {
-            copy.status = 'delayed';
-            copy.delayMinutes = (copy.delayMinutes || 0) + 10;
-          }
-        } else if (copy.status === 'scheduled' && Math.random() < 0.4) {
-          copy.status = 'boarding';
-        } else if (copy.status === 'boarding' && Math.random() < 0.5) {
-          copy.status = 'departed';
-          copy.speed = 300 + Math.random() * 300;
-          copy.altitude = 2000 + Math.random() * 8000;
-        }
-
-        return copy;
-      })
+  private socketService =
+    inject(
+      MockFlightSocketService
     );
 
-    // publish
-    this.updates$.next(this.flights());
+  // CENTRALIZED FLIGHT STATE
+
+  flights =
+    this.socketService
+      .flightsSignal;
+
+  // SELECTED FLIGHT
+
+  selectedFlight =
+    signal<Flight | null>(null);
+
+  // SEARCH TERM
+
+  searchTerm =
+    signal('');
+
+  // FILTERS
+
+  selectedStatus =
+    signal('ALL');
+
+  selectedAircraft =
+    signal('ALL');
+
+  selectedFIR =
+    signal('ALL');
+
+  // FILTERED FLIGHTS
+
+  filteredFlights = computed(() => {
+
+    const search =
+      this.searchTerm()
+        .toLowerCase()
+        .trim();
+
+    return this.flights().filter(
+      (flight) => {
+
+        // SEARCH
+
+        const matchesSearch =
+
+          flight.id
+            .toLowerCase()
+            .includes(search) ||
+
+          flight.departureAirport
+            .toLowerCase()
+            .includes(search) ||
+
+          flight.destinationAirport
+            .toLowerCase()
+            .includes(search) ||
+
+          flight.firRegion
+            .toLowerCase()
+            .includes(search);
+
+        // STATUS FILTER
+
+        const matchesStatus =
+
+          this.selectedStatus() ===
+            'ALL' ||
+
+          flight.status ===
+            this.selectedStatus();
+
+        // AIRCRAFT FILTER
+
+        const matchesAircraft =
+
+          this.selectedAircraft() ===
+            'ALL' ||
+
+          flight.aircraftType ===
+            this.selectedAircraft();
+
+        // FIR FILTER
+
+        const matchesFIR =
+
+          this.selectedFIR() ===
+            'ALL' ||
+
+          flight.firRegion ===
+            this.selectedFIR();
+
+        return (
+
+          matchesSearch &&
+
+          matchesStatus &&
+
+          matchesAircraft &&
+
+          matchesFIR
+        );
+      }
+    );
+  });
+
+  // ACTIVE FLIGHTS
+
+  activeFlights = computed(() =>
+
+    this.flights().filter(
+      (flight) =>
+        flight.status !==
+        'Landed'
+    )
+  );
+
+  // DELAYED FLIGHTS
+
+  delayedFlights = computed(() =>
+
+    this.flights().filter(
+      (flight) =>
+        flight.status ===
+        'Delayed'
+    )
+  );
+
+  // CRITICAL FLIGHTS
+
+  criticalFlights = computed(() =>
+
+    this.flights().filter(
+      (flight) =>
+
+        flight.altitude < 10000 ||
+
+        flight.speed > 900 ||
+
+        flight.delayMinutes > 30
+    )
+  );
+
+  // FLIGHT COUNTS
+
+  totalFlights = computed(() =>
+
+    this.flights().length
+  );
+
+  landedFlights = computed(() =>
+
+    this.flights().filter(
+      (flight) =>
+        flight.status ===
+        'Landed'
+    ).length
+  );
+
+  // SEARCH
+
+  updateSearchTerm(
+    value: string
+  ): void {
+
+    this.searchTerm.set(value);
+  }
+
+  // STATUS FILTER
+
+  updateStatusFilter(
+    status: string
+  ): void {
+
+    this.selectedStatus.set(
+      status
+    );
+  }
+
+  // AIRCRAFT FILTER
+
+  updateAircraftFilter(
+    aircraft: string
+  ): void {
+
+    this.selectedAircraft.set(
+      aircraft
+    );
+  }
+
+  // FIR FILTER
+
+  updateFIRFilter(
+    fir: string
+  ): void {
+
+    this.selectedFIR.set(fir);
+  }
+
+  // SELECT FLIGHT
+
+  selectFlight(
+    flight: Flight
+  ): void {
+
+    this.selectedFlight.set(
+      flight
+    );
+  }
+
+  // CLEAR SELECTION
+
+  clearSelectedFlight(): void {
+
+    this.selectedFlight.set(null);
+  }
+
+  // GET FLIGHT BY ID
+
+  getFlightById(
+    id: string
+  ): Flight | undefined {
+
+    return this.flights().find(
+      (flight) =>
+        flight.id === id
+    );
+  }
+
+  // RESET FILTERS
+
+  resetFilters(): void {
+
+    this.searchTerm.set('');
+
+    this.selectedStatus.set(
+      'ALL'
+    );
+
+    this.selectedAircraft.set(
+      'ALL'
+    );
+
+    this.selectedFIR.set(
+      'ALL'
+    );
+  }
+
+  // STATUS CLASS
+
+  getStatusClass(
+    status: string
+  ): string {
+
+    switch (status) {
+
+      case 'Enroute':
+        return 'status-enroute';
+
+      case 'Delayed':
+        return 'status-delayed';
+
+      case 'Boarding':
+        return 'status-boarding';
+
+      case 'Landed':
+        return 'status-landed';
+
+      default:
+        return 'status-default';
+    }
+  }
+
+  // ALERT CONDITIONS
+
+  hasAltitudeAlert(
+    flight: Flight
+  ): boolean {
+
+    return (
+      flight.altitude < 10000
+    );
+  }
+
+  hasSpeedAlert(
+    flight: Flight
+  ): boolean {
+
+    return (
+      flight.speed > 900
+    );
+  }
+
+  hasDelayAlert(
+    flight: Flight
+  ): boolean {
+
+    return (
+      flight.delayMinutes > 30
+    );
   }
 }
-

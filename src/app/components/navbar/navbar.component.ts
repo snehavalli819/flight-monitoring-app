@@ -49,7 +49,7 @@ export class NavbarComponent {
     {
       label: 'Dashboard',
       icon: 'dashboard',
-      route: '/dashboard',
+  route: '/',
     },
     {
       label: 'Flights',
@@ -59,7 +59,7 @@ export class NavbarComponent {
     {
       label: 'Live Tracking',
       icon: 'travel_explore',
-      route: '/tracking',
+  route: '/map',
     },
     {
       label: 'Alerts',
@@ -69,7 +69,7 @@ export class NavbarComponent {
     {
       label: 'Incidents',
       icon: 'report_problem',
-      route: '/incidents',
+  route: '/incidents',
     },
     {
       label: 'Aircraft',

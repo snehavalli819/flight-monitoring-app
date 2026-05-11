@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -11,6 +12,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { FlightDetailComponent } from '../flight detail/flight-detail.component';
 import { FlightsListComponent } from '../flight list/flights-list.component';
 import { FlightMapComponent } from '../flight map/flight-map.component';
+import { AlertPanelComponent } from '../alert-panel/alert-panel.component';
+import { FlightService } from '../../services/flight.service';
 
 interface DashboardStat {
   title: string;
@@ -30,62 +33,45 @@ interface DashboardStat {
     MatButtonModule,
     FlightDetailComponent,
     FlightsListComponent,
-    FlightMapComponent
+    FlightMapComponent,
+    AlertPanelComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent {
-  flights = signal([
-    {
-      id: 'AI102',
-      status: 'Enroute',
-    },
-    {
-      id: 'UK507',
-      status: 'Delayed',
-    },
-    {
-      id: '6E890',
-      status: 'Enroute',
-    },
-    {
-      id: 'AI221',
-      status: 'Landed',
-    },
-  ]);
+  private flightService = inject(FlightService);
 
-  alertsCount = signal(12);
+  // use service signals/computeds
+  alertsCount = signal(12); // keep alerts stubbed for now
 
   stats = computed<DashboardStat[]>(() => {
-    const flights = this.flights();
-
     return [
       {
         title: 'Total Flights',
-        count: flights.length,
+        count: this.flightService.totalFlights(),
         icon: 'flight',
         color: '#1976d2',
         subText: '+12 from last hour',
       },
       {
         title: 'Enroute',
-        count: flights.filter((f) => f.status === 'Enroute').length,
+        count: this.flightService.activeFlights().length,
         icon: 'travel_explore',
         color: '#2e7d32',
         subText: '64.1%',
       },
       {
         title: 'Delayed',
-        count: flights.filter((f) => f.status === 'Delayed').length,
+        count: this.flightService.delayedFlights().length,
         icon: 'warning',
         color: '#d32f2f',
         subText: '10.9%',
       },
       {
         title: 'Landed',
-        count: flights.filter((f) => f.status === 'Landed').length,
+        count: this.flightService.landedFlights(),
         icon: 'flight_land',
         color: '#7b1fa2',
         subText: '18.8%',

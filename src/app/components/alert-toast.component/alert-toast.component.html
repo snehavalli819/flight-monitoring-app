@@ -1,0 +1,44 @@
+
+<div
+  class="toast-container"
+  [ngClass]="getToastClass()"
+>
+
+  <!-- LEFT -->
+  <div class="toast-left">
+
+    <div class="toast-icon">
+
+      <mat-icon>
+        {{ getIcon() }}
+      </mat-icon>
+
+    </div>
+
+    <div class="toast-content">
+
+      <h3>
+        {{ data.flightId }}
+      </h3>
+
+      <p>
+        {{ data.message }}
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- CLOSE -->
+  <button
+    mat-icon-button
+    (click)="close()"
+  >
+
+    <mat-icon>
+      close
+    </mat-icon>
+
+  </button>
+
+</div>

@@ -1,0 +1,149 @@
+<mat-card class="alerts-container">
+
+  <!-- HEADER -->
+  <div class="alerts-header">
+
+    <div>
+
+      <h1>Alerts Center</h1>
+
+      <p>
+        Real-time flight alerts monitoring
+      </p>
+
+    </div>
+
+    <div class="header-actions">
+
+      <div class="alert-counter" [matBadge]="alertCount()" matBadgeColor="warn">
+
+        <mat-icon>
+          notifications_active
+        </mat-icon>
+
+      </div>
+
+      <button mat-stroked-button color="warn" (click)="clearAll()">
+
+        Clear All
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- CRITICAL ALERTS -->
+  <div class="critical-banner" *ngIf="
+      criticalAlerts().length > 0
+    ">
+
+    <mat-icon>
+      warning
+    </mat-icon>
+
+    <span>
+
+      {{
+      criticalAlerts().length
+      }}
+
+      critical alerts require
+      immediate attention
+
+    </span>
+
+  </div>
+
+  <!-- ALERTS LIST -->
+  <div class="alerts-list">
+
+    @for (
+    alert of alerts();
+    track alert.id
+    ) {
+
+    <div class="alert-card" [ngClass]="
+          getAlertClass(
+            alert.severity
+          )
+        ">
+
+      <!-- LEFT -->
+      <div class="alert-left">
+
+        <div class="alert-icon">
+
+          <mat-icon>
+            {{
+            getAlertIcon(
+            alert.type
+            )
+            }}
+          </mat-icon>
+
+        </div>
+
+        <div class="alert-content">
+
+          <div class="alert-top">
+
+            <h3>
+              {{ alert.flightId }}
+            </h3>
+
+            <mat-chip>
+              {{
+              alert.severity
+              }}
+            </mat-chip>
+
+          </div>
+
+          <p>
+            {{ alert.message }}
+          </p>
+
+          <span>
+            {{
+            alert.timestamp
+            | date:'shortTime'
+            }}
+          </span>
+
+        </div>
+
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="alert-actions">
+
+        <button mat-icon-button (click)="
+              markAsRead(alert)
+            ">
+
+          <mat-icon>
+            done
+          </mat-icon>
+
+        </button>
+
+        <button mat-icon-button (click)="
+              clearAlert(alert.id)
+            ">
+
+          <mat-icon>
+            close
+          </mat-icon>
+
+        </button>
+
+      </div>
+
+    </div>
+
+    }
+
+  </div>
+
+</mat-card>

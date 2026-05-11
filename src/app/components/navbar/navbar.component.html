@@ -26,21 +26,18 @@
     <!-- NAVIGATION -->
     <div class="nav-links">
 
-      @for (item of navItems; track item.label) {
+      <a
+        *ngFor="let item of navItems; trackBy: trackByLabel"
+        class="nav-item"
+        [routerLink]="item.route"
+        routerLinkActive="active-link"
+      >
 
-        <a
-          class="nav-item"
-          [routerLink]="item.route"
-          routerLinkActive="active-link"
-        >
+        <mat-icon>{{ item.icon }}</mat-icon>
 
-          <mat-icon>{{ item.icon }}</mat-icon>
+        <span>{{ item.label }}</span>
 
-          <span>{{ item.label }}</span>
-
-        </a>
-
-      }
+      </a>
 
     </div>
 

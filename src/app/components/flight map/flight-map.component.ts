@@ -3,13 +3,16 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  effect,
   inject,
   signal,
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 
-import * as L from 'leaflet';
+// Leaflet is large; import it lazily inside the map initializer to keep
+// the initial bundle small.
+let L: any;
 
 import { interval } from 'rxjs';
 
@@ -19,24 +22,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { FlightService } from '../../services/flight.service';
 
-export interface Flight {
-  id: string;
+import { Flight as ServiceFlight } from '../../services/mock-flight-socket.service';
 
-  latitude: number;
-  longitude: number;
-
-  speed: number;
-  altitude: number;
-
-  route: string;
-
-  status:
-    | 'Enroute'
-    | 'Delayed'
-    | 'Boarding'
-    | 'Landed';
-}
+type Flight = ServiceFlight;
 
 @Component({
   selector: 'app-flight-map',
@@ -57,13 +47,11 @@ export class FlightMapComponent
 {
   private destroyRef = inject(DestroyRef);
 
-  private map!: L.Map;
+  private map: any;
 
-  private markers:
-    Map<string, L.Marker> = new Map();
+  private markers: Map<string, any> = new Map();
 
-  private polylines:
-    Map<string, L.Polyline> = new Map();
+  private polylines: Map<string, any> = new Map();
 
   activeFilter = signal('ALL');
 
@@ -74,68 +62,54 @@ export class FlightMapComponent
     'Boarding',
     'Landed',
   ];
+  private flightService = inject(FlightService);
 
-  flights = signal<Flight[]>([
-    {
-      id: 'AI102',
-      latitude: 28.6139,
-      longitude: 77.2090,
-      speed: 840,
-      altitude: 36000,
-      route: 'DEL → LHR',
-      status: 'Enroute',
-    },
-    {
-      id: 'UK221',
-      latitude: 19.0760,
-      longitude: 72.8777,
-      speed: 720,
-      altitude: 28000,
-      route: 'BOM → DXB',
-      status: 'Delayed',
-    },
-    {
-      id: '6E990',
-      latitude: 13.0827,
-      longitude: 80.2707,
-      speed: 420,
-      altitude: 12000,
-      route: 'MAA → SIN',
-      status: 'Boarding',
-    },
-  ]);
+  // use the centralized flight list and computed filtered results
+  flights = this.flightService.flights;
 
   ngAfterViewInit(): void {
+  this.initializeMap();
 
-    this.initializeMap();
+  // initial render from service data
+  this.renderFlights();
+  // react to service flight updates and refresh the map
+  effect(() => {
+    // read the signal to subscribe to changes
+    this.flightService.flights();
 
-    this.renderFlights();
-
-    this.startFlightSimulation();
+    // schedule refresh after current microtask to ensure map exists
+    Promise.resolve().then(() => this.refreshMap());
+  });
   }
 
   // INITIALIZE MAP
 
   initializeMap(): void {
+    // dynamic import
+    import('leaflet').then((leaflet) => {
+      L = leaflet;
 
-    this.map = L.map('flight-map', {
-      zoomControl: true,
-    }).setView([22.9734, 78.6569], 5);
+      this.map = L.map('flight-map', {
+        zoomControl: true,
+      }).setView([22.9734, 78.6569], 5);
 
-    L.tileLayer(
-      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      {
-        attribution:
-          '© OpenStreetMap contributors',
-      }
-    ).addTo(this.map);
+      L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        {
+          attribution: '© OpenStreetMap contributors',
+        }
+      ).addTo(this.map);
+
+      // if flights already present, render them now
+      Promise.resolve().then(() => this.refreshMap());
+    });
   }
 
   // RENDER FLIGHTS
 
   renderFlights(): void {
 
-    this.filteredFlights().forEach((flight) => {
+  this.filteredFlights().forEach((flight) => {
 
       // ICON
 
@@ -156,7 +130,7 @@ export class FlightMapComponent
 
             <p>
               <strong>Route:</strong>
-              ${flight.route}
+              ${typeof (flight as any).route !== 'undefined' ? (flight as any).route : `${(flight as any).departureAirport} → ${(flight as any).destinationAirport}`}
             </p>
 
             <p>
@@ -213,119 +187,8 @@ export class FlightMapComponent
 
   // LIVE SIMULATION USING RXJS
 
-  startFlightSimulation(): void {
-
-    interval(3000)
-      .pipe(
-        takeUntilDestroyed(
-          this.destroyRef
-        )
-      )
-      .subscribe(() => {
-
-        this.flights.update((flights) =>
-
-          flights.map((flight) => {
-
-            const updatedLat =
-              flight.latitude +
-              this.randomValue(
-                -0.8,
-                0.8
-              );
-
-            const updatedLng =
-              flight.longitude +
-              this.randomValue(
-                -0.8,
-                0.8
-              );
-
-            const updatedFlight = {
-              ...flight,
-
-              latitude: updatedLat,
-
-              longitude: updatedLng,
-
-              speed:
-                flight.speed +
-                this.randomNumber(
-                  -20,
-                  20
-                ),
-
-              altitude:
-                flight.altitude +
-                this.randomNumber(
-                  -500,
-                  500
-                ),
-            };
-
-            // UPDATE MARKER
-
-            const marker =
-              this.markers.get(
-                flight.id
-              );
-
-            marker?.setLatLng([
-              updatedLat,
-              updatedLng,
-            ]);
-
-            // UPDATE POPUP
-
-            marker?.setPopupContent(`
-              <div style="width:220px">
-                <h3>${updatedFlight.id}</h3>
-
-                <p>
-                  <strong>Route:</strong>
-                  ${updatedFlight.route}
-                </p>
-
-                <p>
-                  <strong>Speed:</strong>
-                  ${updatedFlight.speed} km/h
-                </p>
-
-                <p>
-                  <strong>Altitude:</strong>
-                  ${updatedFlight.altitude} ft
-                </p>
-
-                <p>
-                  <strong>Status:</strong>
-                  ${updatedFlight.status}
-                </p>
-              </div>
-            `);
-
-            // UPDATE ROUTE
-
-            const polyline =
-              this.polylines.get(
-                flight.id
-              );
-
-            polyline?.setLatLngs([
-              [
-                updatedLat,
-                updatedLng,
-              ],
-              [
-                updatedLat + 5,
-                updatedLng + 8,
-              ],
-            ]);
-
-            return updatedFlight;
-          })
-        );
-      });
-  }
+  // no local simulation - MockFlightSocketService inside FlightService
+  // updates the `flights` signal which we use to refresh the map
 
   // FILTER
 
@@ -340,12 +203,14 @@ export class FlightMapComponent
 
   filteredFlights(): Flight[] {
 
+    const all = this.flightService.flights();
+
     if (this.activeFilter() === 'ALL') {
-      return this.flights();
+      return all as any as Flight[];
     }
 
-    return this.flights().filter(
-      (flight) =>
+    return all.filter(
+      (flight: any) =>
         flight.status ===
         this.activeFilter()
     );
