@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  CUSTOM_ELEMENTS_SCHEMA,
   inject,
   signal,
 } from '@angular/core';
@@ -35,6 +36,7 @@ interface DashboardStat {
     FlightMapComponent,
     
   ],
+  schemas:[CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
