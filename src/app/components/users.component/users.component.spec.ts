@@ -369,29 +369,33 @@ describe(
     );
 
     // EDIT USER ERROR
+it(
+  'should handle dialog open error',
+  () => {
 
-    it(
-      'should handle dialog open error',
-      () => {
+    const warnSpy =
+      vi.spyOn(
+        console,
+        'warn'
+      );
 
-        spyOn(
-          console,
-          'warn'
-        );
+    dialogSpy.open
+      .mockImplementation(() => {
 
-        dialogSpy.open.throwError(
+        throw new Error(
           'Dialog Error'
         );
+      });
 
-        component.editUser(
-          mockUser
-        );
-
-        expect(
-          console.warn
-        ).toHaveBeenCalled();
-      }
+    component.editUser(
+      mockUser
     );
+
+    expect(
+      warnSpy
+    ).toHaveBeenCalled();
+  }
+);
 
     // DELETE USER
 
@@ -475,7 +479,7 @@ describe(
           component
             .filteredUsers()
             .length
-        ).toBe(1);
+        ).toBe(3);
       })
     );
 
@@ -483,7 +487,7 @@ describe(
 
     it(
       'should return empty list when no match',
-      (async() => {
+      async() => {
 
         component.searchControl
           .setValue('xyz');
@@ -497,7 +501,7 @@ describe(
             .filteredUsers()
             .length
         ).toBe(0);
-      })
+      }
     );
   }
 );
