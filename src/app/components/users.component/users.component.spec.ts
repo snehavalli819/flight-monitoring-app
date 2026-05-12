@@ -14,6 +14,7 @@ import {
 } from '@angular/material/dialog';
 
 import {
+  debounceTime,
   of,
   throwError,
 } from 'rxjs';
@@ -167,12 +168,12 @@ describe(
 
     it(
       'should filter users by search term',
-      fakeAsync(() => {
+      (async() => {
 
         component.searchControl
           .setValue('John');
 
-        tick(400);
+        await new Promise(resolve => setTimeout(resolve, 400));
 
         fixture.detectChanges();
 
@@ -459,14 +460,14 @@ describe(
 
     it(
       'should filter by email',
-      fakeAsync(() => {
+      (async() => {
 
         component.searchControl
           .setValue(
             'emma.watson'
           );
 
-        tick(400);
+        await new Promise(resolve => setTimeout(resolve, 400));
 
         fixture.detectChanges();
 
@@ -482,12 +483,12 @@ describe(
 
     it(
       'should return empty list when no match',
-      fakeAsync(() => {
+      (async() => {
 
         component.searchControl
           .setValue('xyz');
 
-        tick(400);
+        await new Promise(resolve => setTimeout(resolve, 400));
 
         fixture.detectChanges();
 
