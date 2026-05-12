@@ -1,4 +1,5 @@
-<mat-sidenav-container class="layout-container">
+<ng-container *ngIf="isAuthenticated(); else signinOnly">
+  <mat-sidenav-container class="layout-container">
 
   <!-- SIDEBAR -->
   <mat-sidenav
@@ -63,7 +64,7 @@
   <mat-sidenav-content>
 
     <!-- TOP NAVBAR -->
-    <mat-toolbar class="top-navbar">
+    <mat-toolbar class="top-navbar" *ngIf="isAuthenticated()">
 
       <!-- LEFT -->
       <div class="navbar-left">
@@ -76,16 +77,19 @@
         </button>
 
         <div class="page-title">
-          Flight Monitoring Dashboard
+          <div class="brand">
+            <h1>AeroNova Airlines</h1>
+            <span class="tagline">Reaching New Horizons</span>
+          </div>
         </div>
 
       </div>
 
       <!-- RIGHT -->
-      <div class="navbar-right">
+      <div class="navbar-right"  *ngIf="isAuthenticated()">
 
         <!-- SEARCH -->
-        <div class="search-box">
+          <div class="search-box">
 
           <mat-icon>search</mat-icon>
 
@@ -101,6 +105,7 @@
           mat-icon-button
           [matBadge]="alertCount()"
           matBadgeColor="warn"
+          [routerLink]="['/alerts']"
         >
           <mat-icon>
             notifications_active
@@ -120,11 +125,11 @@
         >
 
           <div class="avatar">
-            SC
+            <mat-icon class="avatar-icon">person</mat-icon>
           </div>
 
           <div class="profile-info">
-            <h4>Sneha</h4>
+            <h4>{{ currentUser()?.name }}</h4>
             <span>{{ currentRole() }}</span>
           </div>
 
@@ -137,25 +142,16 @@
         <!-- PROFILE MENU -->
         <mat-menu #profileMenu="matMenu">
 
-          <button mat-menu-item>
-            <mat-icon>person</mat-icon>
-            Profile
-          </button>
-
-          <button mat-menu-item>
-            <mat-icon>settings</mat-icon>
-            Settings
-          </button>
 
           <mat-divider></mat-divider>
 
-          <button mat-menu-item>
-            <mat-icon>logout</mat-icon>
-            Logout
-          </button>
+            <button mat-menu-item (click)="logout()">
+              <mat-icon>logout</mat-icon>
+              Logout
+            </button>
 
-        </mat-menu>
-
+        </mat-menu> 
+       
       </div>
 
     </mat-toolbar>
@@ -169,4 +165,11 @@
 
   </mat-sidenav-content>
 
-</mat-sidenav-container>
+  </mat-sidenav-container>
+</ng-container>
+
+<ng-template #signinOnly>
+  <div class="signin-only">
+    <router-outlet></router-outlet>
+  </div>
+</ng-template>

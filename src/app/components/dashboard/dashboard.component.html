@@ -54,7 +54,7 @@
       <div class="section-header">
         <h2>Live Flights</h2>
 
-        <button mat-button color="primary">
+        <button mat-button color="primary" (click)="router.navigate(['/flights'])">
           View All
         </button>
       </div>
@@ -71,7 +71,7 @@
       <div class="section-header">
         <h2>Live Flight Map</h2>
 
-        <button mat-button color="primary">
+        <button mat-button color="primary" (click)="router.navigate(['/map'])">
           Expand
         </button>
       </div>
@@ -84,26 +84,6 @@
 
   </div>
 
-  <!-- ALERTS + DETAILS -->
-  <div class="bottom-grid">
 
-  <!-- ALERTS -->
-  <!-- Use standalone alerts panel component -->
-  <app-alerts-panel></app-alerts-panel>
-
-    <!-- DETAILS -->
-    <mat-card class="details-card">
-
-      <div class="section-header">
-        <h2>Flight Details</h2>
-      </div>
-
-      <div class="details-placeholder">
-        <app-flight-detail></app-flight-detail>
-      </div>
-
-    </mat-card>
-
-  </div>
 
 </div>

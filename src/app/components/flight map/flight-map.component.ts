@@ -6,6 +6,7 @@ import {
   effect,
   inject,
   signal,
+  OnDestroy,
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -43,7 +44,7 @@ type Flight = ServiceFlight;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FlightMapComponent
-  implements AfterViewInit
+  implements AfterViewInit, OnDestroy
 {
   private destroyRef = inject(DestroyRef);
 
@@ -67,19 +68,54 @@ export class FlightMapComponent
   // use the centralized flight list and computed filtered results
   flights = this.flightService.flights;
 
+  constructor() {
+    // React to service flight updates and refresh the map when it exists.
+    // effect must run inside an injection context (constructor is valid).
+    effect(() => {
+      // read the signal to subscribe to changes
+      this.flightService.flights();
+
+      // schedule refresh after current microtask; only refresh if map exists
+      Promise.resolve().then(() => {
+        if (this.map) {
+          this.refreshMap();
+        }
+      });
+    });
+  }
+
   ngAfterViewInit(): void {
   this.initializeMap();
+  }
 
-  // initial render from service data
-  this.renderFlights();
-  // react to service flight updates and refresh the map
-  effect(() => {
-    // read the signal to subscribe to changes
-    this.flightService.flights();
+  ngOnDestroy(): void {
+    // remove all markers and polylines and destroy the map
+    try {
+      this.markers.forEach((m) => {
+        try {
+          if (this.map && m && this.map.removeLayer) {
+            this.map.removeLayer(m);
+          }
+        } catch {}
+      });
 
-    // schedule refresh after current microtask to ensure map exists
-    Promise.resolve().then(() => this.refreshMap());
-  });
+      this.polylines.forEach((p) => {
+        try {
+          if (this.map && p && this.map.removeLayer) {
+            this.map.removeLayer(p);
+          }
+        } catch {}
+      });
+
+      this.markers.clear();
+      this.polylines.clear();
+
+      if (this.map && this.map.remove) {
+        this.map.remove();
+      }
+    } catch (e) {
+      // ignore cleanup errors
+    }
   }
 
   // INITIALIZE MAP
@@ -108,6 +144,8 @@ export class FlightMapComponent
   // RENDER FLIGHTS
 
   renderFlights(): void {
+
+  if (!L || !this.map) return;
 
   this.filteredFlights().forEach((flight) => {
 
@@ -157,7 +195,7 @@ export class FlightMapComponent
 
       // ROUTE LINE
 
-      const route = L.polyline(
+  const route = L.polyline(
         [
           [
             flight.latitude,
@@ -219,21 +257,29 @@ export class FlightMapComponent
   // REFRESH MAP
 
   refreshMap(): void {
+    if (!this.map) return;
 
     this.markers.forEach((marker) => {
-      this.map.removeLayer(marker);
+      try {
+        this.map.removeLayer(marker);
+      } catch (e) {
+        // ignore if layer already removed or invalid
+      }
     });
 
-    this.polylines.forEach(
-      (polyline) => {
+    this.polylines.forEach((polyline) => {
+      try {
         this.map.removeLayer(polyline);
+      } catch (e) {
+        // ignore
       }
-    );
+    });
 
     this.markers.clear();
 
     this.polylines.clear();
 
+    // render now that layers are cleared
     this.renderFlights();
   }
 

@@ -1,10 +1,26 @@
 import { Routes } from '@angular/router';
-import { RoleGuard } from './guards/role.guard';
+import { roleGuard } from './guards/role.guard';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
 	{
 		path: '',
-		loadComponent: () => import('./components/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+		redirectTo: 'dashboard',
+		pathMatch: 'full',
+	},
+	{
+		path: 'dashboard',
+
+		canActivate: [
+			authGuard
+		],
+
+		loadComponent: () =>
+			import(
+				'./components/dashboard/dashboard.component'
+			).then(
+				(m) => m.DashboardComponent
+			)
 	},
 	{
 		path: 'map',
@@ -17,7 +33,8 @@ export const routes: Routes = [
 	{
 		path: 'flights/new',
 		loadComponent: () => import('./components/incident form/incident-form.component').then((m) => m.IncidentFormComponent),
-		canActivate: [RoleGuard],
+		canActivate: [roleGuard],
+		data: { roles: ['Supervisor', 'Controller'] },
 	},
 	{
 		path: 'flights/:id',
@@ -34,19 +51,63 @@ export const routes: Routes = [
 			)
 	},
 	{
-		path: 'incidents',
+		path: 'incidents/new',
 		loadComponent: () => import('./components/incident form/incident-form.component').then((m) => m.IncidentFormComponent),
+		canActivate: [roleGuard],
+		data: { roles: ['Supervisor', 'Controller'] },
 	},
-	{
-		path: 'aircraft',
-		loadComponent: () => import('./components/dashboard/dashboard.component').then((m) => m.DashboardComponent),
-	},
-	{
-		path: 'airports',
-		loadComponent: () => import('./components/dashboard/dashboard.component').then((m) => m.DashboardComponent),
-	},
+	
+
 	{
 		path: 'users',
-		loadComponent: () => import('./components/dashboard/dashboard.component').then((m) => m.DashboardComponent),
+
+		canActivate: [
+			authGuard,
+			roleGuard
+		],
+
+		data: {
+			roles: [
+				'Supervisor'
+			]
+		},
+
+		loadComponent: () =>
+			import(
+				'./components/users.component/users.component'
+			).then(
+				(m) => m.UsersComponent
+			)
+	},
+	{
+		path: 'access-denied',
+
+		loadComponent: () =>
+			import(
+				'./components/access-denied.component/access-denied.component'
+			).then(
+				(m) => m.AccessDeniedComponent
+			)
+	}
+	,
+	{
+		path: 'signin',
+
+		loadComponent: () =>
+			import(
+				'./components/sign-in.component/sign-in.component'
+			).then(
+				(m) => m.SigninComponent
+			)
+	},
+	{
+		path: 'incidents',
+
+		canActivate: [authGuard],
+
+		loadComponent: () =>
+			import(
+				'./components/incident-history.component/incident-history.component'
+			).then((m) => m.IncidentHistoryComponent),
 	}
 ];

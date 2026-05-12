@@ -2,7 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   signal,
+  inject,
 } from '@angular/core';
+import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -39,17 +41,27 @@ interface NavItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavbarComponent {
-  sidebarOpened = signal(true);
+  sidebarOpened = signal(false);
 
   alertCount = signal(12);
 
-  currentRole = signal('Supervisor');
+  // derive role from AuthService when available
+  private authService = inject(AuthService);
+
+  currentRole = this.authService.userRole;
+
+  isAuthenticated = this.authService.isAuthenticated;
+
+  currentUser = this.authService.currentUser;
+
+  // template reference for matMenu trigger
+  
 
   navItems: NavItem[] = [
     {
       label: 'Dashboard',
       icon: 'dashboard',
-  route: '/',
+    route: '/',
     },
     {
       label: 'Flights',
@@ -72,16 +84,6 @@ export class NavbarComponent {
   route: '/incidents',
     },
     {
-      label: 'Aircraft',
-      icon: 'airplanemode_active',
-      route: '/aircraft',
-    },
-    {
-      label: 'Airports',
-      icon: 'location_on',
-      route: '/airports',
-    },
-    {
       label: 'Users & Roles',
       icon: 'groups',
       route: '/users',
@@ -94,4 +96,8 @@ export class NavbarComponent {
 
   trackByLabel = (_: number, item: NavItem) =>
     item.label;
+
+  logout(): void {
+    this.authService.logout();
+  }
 }
