@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1,
+    "name": "ott Carter",
+    "email": "supervisor@airnav.com",
+    "password": "Supervisor@123",
+    "role": "Supervisor",
+    "status": "Active"
+  },
+
+  {
+    "id": 2,
+    "name": "Alexander Watson",
+    "email": "controller@airnav.com",
+    "password": "Controller@123",
+    "role": "Controller",
+    "status": "Active"
+  },
+
+  {
+    "id": 3,
+    "name": "Alex Johnson",
+    "email": "viewer@airnav.com",
+    "password": "Viewer@123",
+    "role": "Viewer",
+    "status": "Active"
+  }
+]

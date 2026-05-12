@@ -20,7 +20,7 @@ import {
   startWith,
 } from 'rxjs/operators';
 
-import { toSignal } from '@angular/core/rxjs-interop';
+
 import { FlightService } from '../../services/flight.service';
 
 import { MatTableModule } from '@angular/material/table';
@@ -32,6 +32,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { FlightDetailComponent } from '../flight detail/flight-detail.component';
 
 export interface Flight {
   id: string;
@@ -39,7 +42,7 @@ export interface Flight {
   departureAirport: string;
   destinationAirport: string;
   firRegion: string;
-
+  delayMinutes: number;
   latitude: number;
   longitude: number;
 
@@ -82,7 +85,7 @@ export interface Flight {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FlightsListComponent {
-
+  router = inject(Router);
   displayedColumns = [
     'flightId',
     'aircraft',
@@ -112,7 +115,7 @@ export class FlightsListComponent {
   selectedAircraft = this.flightService.selectedAircraft;
 
   selectedFIR = this.flightService.selectedFIR;
-
+  private dialog = inject(MatDialog);
   // RXJS SEARCH
   // forward control changes to central service
   constructor() {
@@ -171,10 +174,26 @@ export class FlightsListComponent {
   // ACTIONS
 
   trackFlight(flight: Flight): void {
-    console.log('Tracking flight', flight);
+    this.router.navigate(['/map']);
   }
 
-  openFlightDetails(flight: Flight): void {
-    console.log('Flight details', flight);
-  }
+openFlightDetails(
+  flight: Flight
+): void {
+
+  this.dialog.open(
+    FlightDetailComponent,
+
+    {
+      width: '950px',
+
+      maxWidth: '95vw',
+
+      panelClass:
+        'flight-details-dialog',
+
+      data: flight,
+    }
+  );
+}
 }

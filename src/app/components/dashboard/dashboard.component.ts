@@ -9,10 +9,10 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { FlightDetailComponent } from '../flight detail/flight-detail.component';
 import { FlightsListComponent } from '../flight list/flights-list.component';
 import { FlightMapComponent } from '../flight map/flight-map.component';
-import { AlertPanelComponent } from '../alert-panel/alert-panel.component';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 import { FlightService } from '../../services/flight.service';
 
 interface DashboardStat {
@@ -31,10 +31,9 @@ interface DashboardStat {
     MatCardModule,
     MatIconModule,
     MatButtonModule,
-    FlightDetailComponent,
     FlightsListComponent,
     FlightMapComponent,
-    AlertPanelComponent
+    
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
@@ -42,6 +41,9 @@ interface DashboardStat {
 })
 export class DashboardComponent {
   private flightService = inject(FlightService);
+  router = inject(Router);
+  // expose authService for template checks (e.g. authService.canEdit())
+  authService = inject(AuthService);
 
   // use service signals/computeds
   alertsCount = signal(12); // keep alerts stubbed for now
@@ -87,4 +89,20 @@ export class DashboardComponent {
   });
 
   trackByTitle = (_: number, item: DashboardStat) => item.title;
+
+  navigateToForStat(title: string): void {
+    switch (title) {
+      case 'Alerts':
+        this.router.navigate(['/alerts']);
+        break;
+      case 'Total Flights':
+      case 'Enroute':
+      case 'Delayed':
+      case 'Landed':
+        this.router.navigate(['/flights']);
+        break;
+      default:
+        break;
+    }
+  }
 }

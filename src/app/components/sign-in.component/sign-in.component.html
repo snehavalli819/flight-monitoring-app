@@ -1,0 +1,187 @@
+
+<div class="signin-page">
+
+  <!-- LEFT -->
+  <div class="signin-banner">
+
+    <div class="overlay"></div>
+
+    <div class="banner-content">
+
+      <h1>
+        Flight Management System
+      </h1>
+
+      <p>
+        Real-time monitoring,
+        air traffic control and
+        operational management
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- RIGHT -->
+  <div class="signin-section">
+
+    <mat-card class="signin-card">
+
+      <div class="signin-header">
+
+        <h1>Welcome Back</h1>
+
+        <p>
+          Sign in to continue
+        </p>
+
+      </div>
+
+      <!-- FORM -->
+      <form
+        [formGroup]="signinForm"
+        (ngSubmit)="login()"
+      >
+
+        <!-- EMAIL -->
+        <mat-form-field
+          appearance="outline"
+          class="full-width"
+        >
+
+          <mat-label>
+            Email
+          </mat-label>
+
+          <input
+            matInput
+            type="email"
+            formControlName="email"
+          />
+
+          <mat-icon matSuffix>
+            mail
+          </mat-icon>
+
+        </mat-form-field>
+
+        <!-- PASSWORD -->
+        <mat-form-field
+          appearance="outline"
+          class="full-width"
+        >
+
+          <mat-label>
+            Password
+          </mat-label>
+
+          <input
+            matInput
+            [type]="
+              hidePassword()
+                ? 'password'
+                : 'text'
+            "
+            formControlName="password"
+          />
+
+          <button
+            type="button"
+            mat-icon-button
+            matSuffix
+            (click)="
+              togglePassword()
+            "
+          >
+
+            <mat-icon>
+
+              {{
+                hidePassword()
+                  ? 'visibility_off'
+                  : 'visibility'
+              }}
+
+            </mat-icon>
+
+          </button>
+
+        </mat-form-field>
+
+        <!-- ERROR -->
+        @if (loginError()) {
+
+          <div class="error-box">
+
+            <mat-icon>
+              warning
+            </mat-icon>
+
+            {{ loginError() }}
+
+          </div>
+        }
+
+        <!-- LOGIN -->
+        <button
+          mat-raised-button
+          color="primary"
+          class="login-btn"
+        >
+
+          Sign In
+
+        </button>
+
+      </form>
+
+      <!-- DEMO USERS -->
+      <div class="demo-users">
+
+        <h3>
+          Demo Accounts
+        </h3>
+
+        <div class="demo-card">
+
+          <strong>
+            Supervisor
+          </strong>
+
+          <span>
+            supervisor@airnav.com
+          </span>
+
+        </div>
+
+        <div class="demo-card">
+
+          <strong>
+            Controller
+          </strong>
+
+          <span>
+            controller@airnav.com
+          </span>
+
+        </div>
+
+        <div class="demo-card">
+
+          <strong>
+            Viewer
+          </strong>
+
+          <span>
+            viewer@airnav.com
+          </span>
+
+        </div>
+
+      </div>
+
+    </mat-card>
+
+  </div>
+
+</div>

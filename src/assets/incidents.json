@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1001,
+    "flightId": "AI102",
+    "incidentType": "Technical Failure",
+    "severity": "HIGH",
+    "description": "Engine vibration detected during cruising altitude.",
+    "timestamp": "2026-05-12T09:45:00Z",
+    "assignedTeam": "Engineering Team",
+    "reportedBy": "Controller",
+    "status": "In Progress"
+  },
+
+  {
+    "id": 1002,
+    "flightId": "UK221",
+    "incidentType": "Communication Failure",
+    "severity": "MEDIUM",
+    "description": "Temporary communication signal loss detected.",
+    "timestamp": "2026-05-12T10:10:00Z",
+    "assignedTeam": "ATC Team",
+    "communicationFrequency": "121.5 MHz",
+    "lastCommunicationTime": "10:05",
+    "reportedBy": "Supervisor",
+    "status": "Open"
+  }
+]

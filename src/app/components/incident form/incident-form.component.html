@@ -132,6 +132,10 @@
           formControlName="timestamp"
         />
 
+        <mat-error *ngIf="incidentForm.get('timestamp')?.errors?.['notPastDate']">
+          Timestamp must be a previous date (before today).
+        </mat-error>
+
       </mat-form-field>
 
     </div>
@@ -166,7 +170,7 @@
     </mat-form-field>
 
     <!-- HIGH SEVERITY -->
-    @if (isHighSeverity()) {
+  
 
       <div class="dynamic-section">
 
@@ -207,7 +211,7 @@
         </mat-form-field>
 
       </div>
-    }
+    
 
     <!-- COMMUNICATION FAILURE -->
     @if (

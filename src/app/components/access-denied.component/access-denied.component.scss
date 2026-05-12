@@ -1,0 +1,48 @@
+.denied-page {
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f8fafc;
+}
+
+.denied-card {
+  width: 420px;
+
+  background: white;
+
+  border-radius: 28px;
+
+  padding: 48px;
+
+  text-align: center;
+
+  box-shadow:
+    0 12px 40px rgba(0,0,0,0.08);
+
+  h1 {
+    margin: 0;
+
+    font-size: 90px;
+    font-weight: 900;
+
+    color: #ef4444;
+  }
+
+  h2 {
+    margin-top: 10px;
+
+    font-size: 30px;
+    font-weight: 800;
+  }
+
+  p {
+    margin: 18px 0 28px;
+
+    color: #64748b;
+
+    line-height: 1.6;
+  }
+}

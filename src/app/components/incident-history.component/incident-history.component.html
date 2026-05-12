@@ -1,0 +1,264 @@
+<mat-card class="history-container">
+
+  <!-- HEADER -->
+  <div class="history-header">
+
+    <div>
+
+      <h1>
+        Incident History
+      </h1>
+
+      <p>
+        Monitor reported incidents
+      </p>
+
+    </div>
+
+    <!-- FILTER -->
+    <div class="severity-filters">
+
+      <!-- CREATE INCIDENT (visible to editors) -->
+      @if (authService.canEdit()) {
+
+        <button
+          mat-raised-button
+          color="primary"
+          [routerLink]="['/incidents/new']"
+        >
+          Create Incident
+        </button>
+
+      }
+
+
+      <button
+        class="filter-btn"
+        [class.active]="
+          selectedSeverity() ===
+          'ALL'
+        "
+        (click)="
+          setSeverity('ALL')
+        "
+      >
+
+        All
+
+      </button>
+
+      <button
+        class="filter-btn high"
+        (click)="
+          setSeverity('HIGH')
+        "
+      >
+
+        High
+
+      </button>
+
+      <button
+        class="filter-btn medium"
+        (click)="
+          setSeverity('MEDIUM')
+        "
+      >
+
+        Medium
+
+      </button>
+
+      <button
+        class="filter-btn low"
+        (click)="
+          setSeverity('LOW')
+        "
+      >
+
+        Low
+
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- INCIDENTS -->
+  <div class="incident-list">
+
+    @for (
+      incident of filteredIncidents();
+      track incident.id
+    ) {
+
+      <div class="incident-card">
+
+        <!-- LEFT -->
+        <div class="incident-left">
+
+          <div
+            class="severity-bar"
+            [ngClass]="
+              getSeverityClass(
+                incident.severity
+              )
+            "
+          ></div>
+
+          <div class="incident-content">
+
+            <div class="incident-top">
+
+              <h3>
+                {{
+                  incident.flightId
+                }}
+              </h3>
+
+              <mat-chip>
+
+                {{
+                  incident.severity
+                }}
+
+              </mat-chip>
+
+            </div>
+
+            <p>
+              {{
+                incident.description
+              }}
+            </p>
+
+            <div class="incident-meta">
+
+              <span>
+
+                {{
+                  incident.incidentType
+                }}
+
+              </span>
+
+              <span>
+
+                {{
+                  incident.timestamp
+                }}
+
+              </span>
+
+              <span>
+
+                Reported By:
+                {{
+                  incident.reportedBy
+                }}
+
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="incident-right">
+
+          <!-- STATUS -->
+          <div
+            class="status-chip"
+            [ngClass]="
+              getStatusClass(
+                incident.status
+              )
+            "
+          >
+
+            {{
+              incident.status
+            }}
+
+          </div>
+
+          <!-- ACTIONS -->
+          @if (
+            authService.canEdit()
+          ) {
+
+            <button
+              mat-icon-button
+              [matMenuTriggerFor]="menu"
+            >
+
+              <mat-icon>
+                more_vert
+              </mat-icon>
+
+            </button>
+
+            <mat-menu #menu="matMenu">
+
+              <button
+                mat-menu-item
+                (click)="
+                  updateStatus(
+                    incident,
+                    'In Progress'
+                  )
+                "
+              >
+
+                In Progress
+
+              </button>
+
+              <button
+                mat-menu-item
+                (click)="
+                  updateStatus(
+                    incident,
+                    'Resolved'
+                  )
+                "
+              >
+
+                Resolve
+
+              </button>
+
+              @if (
+                authService
+                  .hasFullAccess()
+              ) {
+
+                <button
+                  mat-menu-item
+                  (click)="
+                    deleteIncident(
+                      incident
+                    )
+                  "
+                >
+
+                  Delete
+
+                </button>
+
+              }
+
+            </mat-menu>
+          }
+
+        </div>
+
+      </div>
+
+    }
+
+  </div>
+
+</mat-card>
