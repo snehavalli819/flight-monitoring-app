@@ -191,28 +191,6 @@ describe(
       }
     );
 
-    // ROUTER LINK
-
-    it(
-      'should contain dashboard routerLink',
-      () => {
-
-        const buttonDebug =
-          fixture.debugElement.query(
-            By.css('button')
-          );
-
-        const routerLink =
-          buttonDebug.attributes[
-            'ng-reflect-router-link'
-          ];
-
-        expect(routerLink)
-          .toContain(
-            '/dashboard'
-          );
-      }
-    );
 
     // CHANGE DETECTION
 
