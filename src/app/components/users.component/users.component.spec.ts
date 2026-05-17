@@ -1,8 +1,6 @@
 import {
   ComponentFixture,
   TestBed,
-  fakeAsync,
-  tick,
 } from '@angular/core/testing';
 
 import {
@@ -14,9 +12,7 @@ import {
 } from '@angular/material/dialog';
 
 import {
-  debounceTime,
   of,
-  throwError,
 } from 'rxjs';
 
 import {

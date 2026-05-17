@@ -5,7 +5,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-
+import "@angular/compiler"
 @Component({
   selector: 'app-edit-user-dialog',
   standalone: true,
@@ -21,6 +21,7 @@ import { MatSelectModule } from '@angular/material/select';
     <h2 mat-dialog-title>Edit User</h2>
 
     <form [formGroup]="form" (ngSubmit)="save()" style="padding:16px; display:flex; flex-direction:column; gap:12px;">
+    <input matInput placeholder="ID" formControlName="id"  />
       <input matInput placeholder="Name" formControlName="name" />
       <input matInput placeholder="Email" formControlName="email" />
 
@@ -28,6 +29,7 @@ import { MatSelectModule } from '@angular/material/select';
         <mat-option value="Supervisor">Supervisor</mat-option>
         <mat-option value="Controller">Controller</mat-option>
         <mat-option value="Viewer">Viewer</mat-option>
+        <mat-option value="guest">Guest</mat-option>
       </mat-select>
 
       <mat-select formControlName="status">
@@ -51,7 +53,7 @@ export class EditUserDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.form = this.fb.group({
-      id: [this.data?.id],
+      id: [this.data?.id, [Validators.required]],
       name: [this.data?.name, [Validators.required]],
       email: [this.data?.email, [Validators.required, Validators.email]],
       role: [this.data?.role, [Validators.required]],

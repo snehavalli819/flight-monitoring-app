@@ -100,55 +100,7 @@ export class UsersComponent {
 
   private dialog = inject(MatDialog);
 
-  users = signal<User[]>([
-    {
-      id: 1,
-
-      name: 'John Carter',
-
-      email:
-        'john.carter@airnav.com',
-
-      role: 'Supervisor',
-
-      status: 'Active',
-
-      lastLogin:
-        '11 May 2026, 10:22 AM',
-    },
-
-    {
-      id: 2,
-
-      name: 'Emma Watson',
-
-      email:
-        'emma.watson@airnav.com',
-
-      role: 'Controller',
-
-      status: 'Active',
-
-      lastLogin:
-        '11 May 2026, 09:48 AM',
-    },
-
-    {
-      id: 3,
-
-      name: 'Alex Brown',
-
-      email:
-        'alex.brown@airnav.com',
-
-      role: 'Viewer',
-
-      status: 'Inactive',
-
-      lastLogin:
-        '10 May 2026, 06:10 PM',
-    },
-  ]);
+  users = signal<User[]>([]);
 
   searchTerm = toSignal(
 
@@ -277,7 +229,27 @@ export class UsersComponent {
             list.map((u) => (u.id === user.id ? { ...u, status: 'Inactive' } : u))
           );
   }
-
+  addUser(): void {
+   const newUSer : User={
+    id:0,
+    name :'',
+    email :'',
+    role :'Viewer',
+    status :'Active',
+    lastLogin :''
+   }
+  const ref = this.dialog.open(EditUserDialogComponent, {
+        data: newUSer,
+        width: '420px',
+      });
+    
+      ref.afterClosed().subscribe((result) => {
+        if (result) {
+          // update users list
+          this.users.update((list) => [...list, { ...result, id: Date.now() }]);
+        }
+      });
+  }
   trackByUserId = (
     _: number,
     item: User

@@ -20,7 +20,8 @@ export interface AppUser {
   role:
     | 'Supervisor'
     | 'Controller'
-    | 'Viewer';
+    | 'Viewer'
+    | 'guest';
 
   status: string;
 }
@@ -65,7 +66,7 @@ export class AuthService {
       .subscribe({
 
         next: (users) => {
-
+          console.log('Loaded users', users);
           this.users.set(users);
         },
 
@@ -93,8 +94,8 @@ export class AuthService {
 
           user.email === email &&
 
-          user.password ===
-            password &&
+         ( user.password ===
+            password || user.role==='guest' ) &&
 
           user.status === 'Active'
       );
@@ -146,11 +147,11 @@ export class AuthService {
 
     // Perform a full page reload to ensure all UI state is cleared.
     // Use window when available (browser); fall back to router navigation for SSR.
-    if (typeof window !== 'undefined' && window.location) {
-      window.location.href = '/signin';
-    } else {
+    // if (typeof window !== 'undefined' && window.location) {
+    //   window.location.href = '/signin';
+    // } else {
       this.router.navigate(['/signin']);
-    }
+   //
   }
 
   // RESTORE SESSION
